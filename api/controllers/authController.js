@@ -41,3 +41,48 @@ export const signup = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+
+export const signin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide all required fields",
+      });
+    }
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    }
+
+    // Check password
+    const isPasswordMatch = await user.matchPassword(password);
+
+    if (!isPasswordMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    }
+
+    const token = generateToken({ userId: user._id });
+    return res.status(200).json({
+      success: true,
+      message: "User signed in successfully",
+      data: {
+        user: {
+          ...user.toObject(),
+        },
+        token,
+      },
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
