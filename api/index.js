@@ -3,6 +3,7 @@ import connectDB from "./config/Db.js";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoute.js";
 import errorHandler from "./middleware/errorHandler.js";
+import productRoutes from "./routes/productRoute.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
