@@ -70,6 +70,11 @@ export const signin = async (req, res) => {
     }
 
     const token = generateToken({ userId: user._id });
+
+    res.cookie("access_token", token, {
+      httpOnly: true,
+    });
+
     return res.status(200).json({
       success: true,
       message: "User signed in successfully",
@@ -85,4 +90,11 @@ export const signin = async (req, res) => {
       .status(500)
       .json({ success: false, message: "Internal server error" });
   }
+};
+
+export const signout = async (req, res) => {
+  res.clearCookie("access_token");
+  return res
+    .status(200)
+    .json({ success: true, message: "User signed out successfully" });
 };
