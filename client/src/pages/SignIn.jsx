@@ -1,6 +1,8 @@
 import React from 'react'
+import { useState } from 'react'
 
 export default function SignIn() {
+    const[form,setForm] = useState({});
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-100 rounded-2xl'>
       <form className='bg-white p-6 rounded shadow-md w-80'>
