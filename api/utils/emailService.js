@@ -1,19 +1,48 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
 
-// Create transporter with forced IPv4
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT),
-  secure: true, // Change to true for port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  // Force IPv4 to avoid ::1 localhost issue
-  family: 4,
-  // Add connection timeout
-  connectionTimeout: 10000,
-});
+// Set DNS to prefer IPv4 addresses
+dns.setDefaultResultOrder('ipv4first');
+
+// Custom DNS lookup that forces IPv4 only
+const customDnsLookup = (hostname, options, callback) => {
+  dns.lookup(hostname, { family: 4, all: false }, (err, address, family) => {
+    if (err) {
+      console.error('DNS lookup error:', err);
+      return callback(err);
+    }
+    console.log(`DNS resolved ${hostname} to ${address} (IPv${family})`);
+    callback(null, address, family);
+  });
+};
+
+// Create transporter only when needed (lazy initialization)
+let transporter = null;
+
+const getTransporter = () => {
+  if (!transporter) {
+    console.log('Creating email transporter with:');
+    console.log('HOST:', process.env.EMAIL_HOST);
+    console.log('PORT:', process.env.EMAIL_PORT);
+    console.log('USER:', process.env.EMAIL_USER);
+    
+    transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT),
+      secure: false, // Use STARTTLS for port 587
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      // Force IPv4 with custom DNS lookup
+      dnsLookup: customDnsLookup,
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 15000,
+    });
+  }
+  return transporter;
+};
 
 // Send order confirmation email
 export const sendOrderEmail = async (userEmail, order) => {
@@ -102,15 +131,18 @@ export const sendOrderEmail = async (userEmail, order) => {
       </html>
     `;
 
+    // Get transporter (creates it if needed)
+    const emailTransporter = getTransporter();
+
     // Send email
-    const info = await transporter.sendMail({
+    const info = await emailTransporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: userEmail,
       subject: `Order Confirmation - Order #${order._id}`,
       html: emailHTML,
     });
 
-    console.log("Email sent:", info.messageId);
+    console.log("Email sent successfully:", info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error("Email sending failed:", error);

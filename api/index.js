@@ -1,13 +1,18 @@
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, ".env") });
+
 import express from "express";
 import connectDB from "./config/Db.js";
-import dotenv from "dotenv";
 import authRoutes from "./routes/authRoute.js";
 import errorHandler from "./middleware/errorHandler.js";
 import productRoutes from "./routes/productRoute.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoute.js";
-
-dotenv.config();
 
 const app = express();
 
