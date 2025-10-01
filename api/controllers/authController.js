@@ -78,12 +78,10 @@ export const signin = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User signed in successfully",
-      data: {
-        user: {
-          ...user.toObject(),
-        },
-        token,
+      user: {
+        ...user.toObject(),
       },
+      token,
     });
   } catch (error) {
     return res

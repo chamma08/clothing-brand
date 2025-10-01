@@ -2,10 +2,12 @@ import axios from "axios";
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
 export default function SignIn() {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const { signin } = useAuth();
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
@@ -19,10 +21,12 @@ export default function SignIn() {
         },
       });
       if (res.status === 200) {
+        const { user, token } = res.data;
+        signin(user, token);
         alert("Sign In Successfully");
         setForm({ email: "", password: "" });
         navigate("/");
-        console.log(res.data)
+        console.log(res.data);
       }
     } catch (error) {
       console.log("Something went Wrong", error);
