@@ -1,8 +1,14 @@
-import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import Product from "../models/Product.js";
+import connectDB from "../config/Db.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from the api directory
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const products = [
   {
@@ -140,7 +146,7 @@ const products = [
     description: "Comfortable sneakers for everyday play.",
     price: 35,
     imageUrl:
-      "https://images.unsplash.com/photo-1560072810-1cdd64c5dc84?w=300&h=400&fit=crop",
+      "https://www.freepik.com/free-photo/woman-white-background-model-shoe_1042924.htm#fromView=search&page=1&position=11&uuid=08e29ddb-9ad2-4e47-a8b4-de1737901ea9&query=kids+sneakers",
     category: "Kids",
     sizes: ["S", "M", "L"],
     stock: 20,
@@ -209,7 +215,7 @@ const products = [
 
 const seedProducts = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await connectDB();
 
     // clear old products (optional)
     await Product.deleteMany();

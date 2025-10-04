@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.post("/", authenticateToken, placeOrder);
 router.post("/guest", guestOrder);
-router.get("/:id", authenticateToken, getOrder);
+router.get("/:id",  getOrder);
 
 export default router;

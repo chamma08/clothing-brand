@@ -6,7 +6,6 @@ import { sendOrderEmail } from "../utils/emailService.js";
 // Place order (logged-in user)
 export const placeOrder = async (req, res) => {
   try {
-    // FIXED: Changed from req.user.id to req.user._id for consistency
     const userId = req.user._id;
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
 
@@ -59,10 +58,8 @@ export const guestOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "No items" });
     }
 
-    // FIXED: Handle both possible cart item structures
     const mappedItems = await Promise.all(
       items.map(async (i) => {
-        // Guest cart items might have _id or product._id
         const productId = i._id || i.product?._id || i.productId;
         
         if (!productId) {
