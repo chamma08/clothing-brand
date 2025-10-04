@@ -7,7 +7,6 @@ import connectDB from "../config/Db.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load .env from the api directory
 dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const products = [
@@ -217,7 +216,6 @@ const seedProducts = async () => {
   try {
     await connectDB();
 
-    // clear old products (optional)
     await Product.deleteMany();
     console.log("Old products cleared ✅");
 

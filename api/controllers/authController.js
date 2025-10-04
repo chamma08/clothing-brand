@@ -80,6 +80,7 @@ export const signin = async (req, res) => {
       message: "User signed in successfully",
       user: {
         ...user.toObject(),
+        password: undefined,
       },
       token,
     });

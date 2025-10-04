@@ -33,10 +33,10 @@ app.get("/api/health", (req, res) => {
     .json({ message: "Server is running!", timestamp: new Date() });
 });
 
-// Error handling middleware
-app.use(errorHandler);
-
 app.listen(PORT, () => {
   connectDB();
   console.log(`Server running on port ${PORT}`);
 });
+
+// Error handling middleware
+app.use(errorHandler);

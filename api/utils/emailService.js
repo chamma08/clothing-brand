@@ -16,7 +16,7 @@ const customDnsLookup = (hostname, options, callback) => {
   });
 };
 
-// Create transporter only when needed (lazy initialization)
+
 let transporter = null;
 
 const getTransporter = () => {
